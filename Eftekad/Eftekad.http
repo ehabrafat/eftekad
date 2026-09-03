@@ -1,0 +1,6 @@
+@Eftekad_HostAddress = http://localhost:5030
+
+GET {{Eftekad_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

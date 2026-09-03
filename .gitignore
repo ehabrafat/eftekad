@@ -1,0 +1,36 @@
+## Build output
+/bin/
+/obj/
+/out/
+/publish/
+*/bin/
+*/obj/
+*/out/
+*/publish/
+
+
+## NuGet
+packages/
+*.nupkg
+*.snupkg
+*.nuget/
+*.nuget\
+*.nuget.package/
+*.packages
+*.nupkg.metadata
+*.nuget.props
+*.nuget.targets
+
+## Temp files
+*.tmp
+*.temp
+*.cache
+*.cache.json
+*.cache.xml
+*.cache.config
+*.tmp
+*.temp
+*.pid
+*.seed
+*.pid
+*.seed
