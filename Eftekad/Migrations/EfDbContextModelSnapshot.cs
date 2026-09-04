@@ -22,6 +22,94 @@ namespace Eftekad.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("Eftekad.Features.AcademicStages.AcademicStage", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("Code")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Code")
+                        .IsUnique();
+
+                    b.ToTable("AcademicStages");
+                });
+
+            modelBuilder.Entity("Eftekad.Features.Members.Member", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("AcademicStageId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Apartment")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Area")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Building")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateOnly?>("DateOfBirth")
+                        .HasColumnType("date");
+
+                    b.Property<string>("Floor")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Gender")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Notes")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Phone")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Street")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AcademicStageId");
+
+                    b.ToTable("Members");
+                });
+
             modelBuilder.Entity("Eftekad.Features.Users.User", b =>
                 {
                     b.Property<int>("Id")
@@ -46,6 +134,9 @@ namespace Eftekad.Migrations
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
+
+                    b.Property<int?>("MemberId")
+                        .HasColumnType("int");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -72,7 +163,39 @@ namespace Eftekad.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("MemberId")
+                        .IsUnique()
+                        .HasFilter("[MemberId] IS NOT NULL");
+
                     b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("Eftekad.Features.Members.Member", b =>
+                {
+                    b.HasOne("Eftekad.Features.AcademicStages.AcademicStage", "AcademicStage")
+                        .WithMany("Members")
+                        .HasForeignKey("AcademicStageId");
+
+                    b.Navigation("AcademicStage");
+                });
+
+            modelBuilder.Entity("Eftekad.Features.Users.User", b =>
+                {
+                    b.HasOne("Eftekad.Features.Members.Member", "Member")
+                        .WithOne("User")
+                        .HasForeignKey("Eftekad.Features.Users.User", "MemberId");
+
+                    b.Navigation("Member");
+                });
+
+            modelBuilder.Entity("Eftekad.Features.AcademicStages.AcademicStage", b =>
+                {
+                    b.Navigation("Members");
+                });
+
+            modelBuilder.Entity("Eftekad.Features.Members.Member", b =>
+                {
+                    b.Navigation("User");
                 });
 #pragma warning restore 612, 618
         }

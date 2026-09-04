@@ -1,4 +1,6 @@
 using System.Linq.Expressions;
+using Eftekad.Features.AcademicStages;
+using Eftekad.Features.Members;
 using Eftekad.Features.Users;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
@@ -8,7 +10,8 @@ namespace Eftekad.Data;
 public class EfDbContext(DbContextOptions options) : DbContext(options)
 {
     public DbSet<User> Users { get; set; }
-
+    public DbSet<AcademicStage> AcademicStages { get; set; }
+    public DbSet<Member> Members { get; set; }
 
     public override EntityEntry<TEntity> Remove<TEntity>(TEntity entity) where TEntity : class
     {
@@ -27,7 +30,10 @@ public class EfDbContext(DbContextOptions options) : DbContext(options)
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
+        
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(EfDbContext).Assembly);
 
+        
         // Apply global query filter for all entities that inherit from BaseEntity
         foreach (var entityType in modelBuilder.Model.GetEntityTypes()
                      .Where(e => typeof(BaseEntity).IsAssignableFrom(e.ClrType)))
