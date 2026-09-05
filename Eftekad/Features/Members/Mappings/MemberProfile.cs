@@ -11,6 +11,8 @@ public class MemberProfile : Profile
         CreateMap<CreateMemberFeature.CreateMemberReq, Member>()
             .ForMember(x => x.DateOfBirth, opt => opt.MapFrom(x => x.DateOfBirth.ToDateOnly()));
         
-        
+        CreateMap<UpdateMemberFeature.UpdateMemberReq, Member>()
+            .ForMember(x => x.DateOfBirth, opt => opt.MapFrom(x => x.DateOfBirth.ToDateOnly()));
+
     }
 }

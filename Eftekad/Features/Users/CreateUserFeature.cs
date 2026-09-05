@@ -14,25 +14,25 @@ public static class CreateUserFeature
     public class CreateUserReq
     {
         [Column("name")]
-        public string Name { get; set; } = string.Empty;
+        public string? Name { get; set; } 
 
         [Column("username")]
-        public string Username { get; set; } = string.Empty;
+        public string Username { get; set; }
 
         [Column("password")]
-        public string Password { get; set; } = string.Empty;
-
-        [Column("role")]
-        public string Role { get; set; } = Auth.Role.User;
-
+        public string Password { get; set; } 
+        
         [Column("church")]
-        public string Church { get; set; } = string.Empty;
+        public string? Church { get; set; } 
 
         [Column("email")]
-        public string Email { get; set; } = string.Empty;
+        public string? Email { get; set; } 
 
         [Column("profilePic")]
         public IFormFile? ProfilePic { get; set; }
+
+        [Column("memberId")]
+        public int? MemberId { get; set; }
     }
     
     public class CreateUserEndpoint : IEndpoint
@@ -48,12 +48,40 @@ public static class CreateUserFeature
     {
         public CreateUserValidator(EfDbContext dbContext)
         {
+            
+            RuleFor(x => x.Username)
+                .Must(username => !string.IsNullOrWhiteSpace(username))
+                .WithMessage("Username is required");
+            
             RuleFor(x => x.Username)
                 .MustAsync(async (username, cancellationToken) =>
                 {
-                    return !(await dbContext.Users.AnyAsync(x => x.Username == username,  cancellationToken));
-                }).WithMessage(ErrorMessage.UsernameAlreadyExists)
-                .When(x => !string.IsNullOrEmpty(x.Username));
+                    return !(await dbContext.Users.AnyAsync(x => x.Username == username, cancellationToken));
+                }).WithMessage(ErrorMessage.UsernameAlreadyExists);
+               // .When(x => !string.IsNullOrEmpty(x.Username));
+
+
+            RuleFor(x => x.Password)
+                .Must(pass => !string.IsNullOrWhiteSpace(pass))
+                .WithMessage("password is required");
+
+            
+            RuleFor(x => x.MemberId)
+                .MustAsync(async (memberId, cancellationToken) =>
+                {
+                    var memberExists = await dbContext.Members.AnyAsync(x => x.Id == memberId, cancellationToken);
+                    return memberExists;
+                }).WithMessage("member not exists")
+                
+                .When(x => x.MemberId != null);
+           
+            RuleFor(x => x.MemberId)
+                .MustAsync(async (memberId, cancellationToken) =>
+                {
+                    var alreadyHasUser = await dbContext.Users.AnyAsync(x => x.MemberId == memberId, cancellationToken);
+                    return !alreadyHasUser;
+                }).WithMessage("a user has already been added to this member")
+                .When(x => x.MemberId != null);
             
             RuleFor(x => x.Email)
                 .MustAsync(async (email, cancellationToken) =>
@@ -78,6 +106,7 @@ public static class CreateUserFeature
             return Results.BadRequest(new {Errors = validationResult.Errors.Select(x => x.ErrorMessage)});
         }
         var user =  mapper.Map<CreateUserReq, User>(req);
+        user.Role = Auth.Role.User;
         user.Password = BCrypt.Net.BCrypt.HashPassword(req.Password);
         dbContext.Users.Add(user);
         await dbContext.SaveChangesAsync(cancellationToken);

@@ -20,7 +20,9 @@ builder.Services.AddDbContext<EfDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddEndpoints();
 builder.Services.AddAutoMapper(
-    cfg => { /* optional configuration */ },
+    cfg =>
+    {
+    },
     AppDomain.CurrentDomain.GetAssemblies()  // This is a params Assembly[] parameter
 );
 
